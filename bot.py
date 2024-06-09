@@ -5,8 +5,6 @@ import yt_dlp as youtube_dl
 import re
 import requests
 import zipfile
-from dotenv import load_dotenv
-load_dotenv()
 
 # Replace 'YOUR_BOT_TOKEN' with your bot's token
 TOKEN = os.getenv("DISCORD_TOKEN")
