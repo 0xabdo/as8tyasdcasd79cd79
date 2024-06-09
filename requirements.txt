@@ -2,3 +2,4 @@ discord.py
 google-api-python-client
 youtube_dl
 yt-dlp
+PyNaCl
