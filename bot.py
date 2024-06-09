@@ -3,7 +3,8 @@ import discord
 from discord.ext import commands
 import yt_dlp as youtube_dl
 import re
-import subprocess
+import requests
+import zipfile
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -13,8 +14,8 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 intents = discord.Intents.default()
 intents.message_content = True
 
-ffmpeg_folder = "ffmpeg"
-ffmpeg_repo_url = "https://git.ffmpeg.org/ffmpeg.git"
+ffmpeg_folder = "ffmpeg-master-latest-win64-gpl"
+ffmpeg_zip_url = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
 ffmpeg_path = os.path.join(ffmpeg_folder, "bin", "ffmpeg.exe")
 
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -51,13 +52,18 @@ def is_valid_url(url):
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     return re.match(regex, url) is not None
 
-def clone_ffmpeg():
-    print("Cloning FFmpeg...")
-    subprocess.run(["git", "clone", ffmpeg_repo_url, ffmpeg_folder], check=True)
-    print("FFmpeg cloned successfully.")
+def download_ffmpeg():
+    print("Downloading FFmpeg...")
+    response = requests.get(ffmpeg_zip_url)
+    with open("ffmpeg.zip", "wb") as f:
+        f.write(response.content)
+    with zipfile.ZipFile("ffmpeg.zip", "r") as zip_ref:
+        zip_ref.extractall()
+    os.remove("ffmpeg.zip")
+    print("FFmpeg downloaded successfully.")
 
 if not os.path.exists(ffmpeg_path):
-    clone_ffmpeg()
+    download_ffmpeg()
 
 @bot.command(name='play', help='To play a song')
 async def play(ctx, *, query: str):
